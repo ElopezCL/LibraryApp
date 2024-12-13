@@ -7,5 +7,5 @@ data class Book(
     val year: Int,
     val description: String,
     val isAvailable: Boolean,
-    val imageUrl: String? = null // Opcional, para futuras mejoras
+    val imageUrl: String? = null
 )

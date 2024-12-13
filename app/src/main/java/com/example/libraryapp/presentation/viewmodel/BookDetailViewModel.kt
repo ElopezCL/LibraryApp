@@ -1,21 +1,22 @@
 package com.example.libraryapp.presentation.viewmodel
 
-import AddBookUseCase
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.libraryapp.domain.model.Book
+import com.example.libraryapp.domain.usecase.GetBookByIdUseCase
 import com.example.libraryapp.domain.usecase.UseCaseProvider
 import kotlinx.coroutines.launch
 
-class BookListViewModel : ViewModel() {
+class BookDetailViewModel : ViewModel() {
 
-    private val getBooksUseCase = UseCaseProvider.provideGetBooksUseCase()
-    private val addBookUseCase = UseCaseProvider.provideAddBookUseCase()
+    private val getBookByIdUseCase = UseCaseProvider.provideGetBookDetailUseCase()
+    private val updateBookUseCase = UseCaseProvider.provideUpdateBookUseCase()
 
-    private val _books = MutableLiveData<List<Book>>()
-    val books: LiveData<List<Book>> = _books
+
+    private val _book = MutableLiveData<Book?>()
+    val book: LiveData<Book?> = _book
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -23,15 +24,14 @@ class BookListViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    init {
-        loadBooks()
-    }
+    private val _bookDeleted = MutableLiveData<Boolean>()
+    val bookDeleted: LiveData<Boolean> get() = _bookDeleted
 
-    fun loadBooks() {
+    fun loadBook(id: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                _books.value = getBooksUseCase()
+                _book.value = getBookByIdUseCase(id)
                 _error.value = null
             } catch (e: Exception) {
                 _error.value = e.message
@@ -41,20 +41,12 @@ class BookListViewModel : ViewModel() {
         }
     }
 
-    fun addBook(title: String, author: String, year: Int, description: String) {
+    fun updateBook(book: Book) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val book = Book(
-                    id = 0,
-                    title = title,
-                    author = author,
-                    year = year,
-                    description = description,
-                    isAvailable = true,
-                )
-                addBookUseCase(title, author, year, description)
-                loadBooks()
+                updateBookUseCase(book)
+                loadBook(id = book.id)
                 _error.value = null
             } catch (e: Exception) {
                 _error.value = e.message
@@ -63,4 +55,6 @@ class BookListViewModel : ViewModel() {
             }
         }
     }
+
+
 }

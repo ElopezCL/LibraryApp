@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 class LocalBookDataSource {
 
     suspend fun getBooks(): List<Book> {
-        delay(1000) // Simulamos delay de red/BD
+        delay(1000)
         return BookDatabase.getBooks()
     }
 
@@ -20,6 +20,14 @@ class LocalBookDataSource {
         BookDatabase.addBook(book)
     }
 
-    //TODO add the updateFunction
+    suspend fun updateBook(book: Book) {
+        BookDatabase.updateBook(book)
+    }
+
+     suspend fun getBookById(id: Int): Book? {
+        return BookDatabase.getBook(id)
+    }
+
+
 
 }

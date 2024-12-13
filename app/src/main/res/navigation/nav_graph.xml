@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/bookListFragment">
+
+    <!-- Destino de BookListFragment -->
+    <fragment
+        android:id="@+id/bookListFragment"
+        android:name="com.example.libraryapp.presentation.ui.BookingListFragment"
+        android:label="Book List"
+        tools:layout="@layout/fragment_booking_list">
+        <action
+            android:id="@+id/action_bookListFragment_to_bookDetailFragment"
+            app:destination="@id/bookDetailFragment" />
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookDetailFragment"
+        android:name="com.example.libraryapp.presentation.ui.BookingDetailFragment"
+        android:label="Book Detail"
+        tools:layout="@layout/fragment_booking_detail">
+        <argument
+            android:name="bookId"
+            app:argType="integer" />
+    </fragment>
+
+</navigation>

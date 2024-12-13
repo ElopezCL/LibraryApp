@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.libraryapp.R
@@ -17,7 +19,7 @@ import com.example.libraryapp.presentation.viewmodel.BookListViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-
+private const val IdBook = "bookId"
 class BookingListFragment : Fragment(R.layout.fragment_booking_list) {
 
     private var _binding: FragmentBookingListBinding? = null
@@ -57,7 +59,13 @@ class BookingListFragment : Fragment(R.layout.fragment_booking_list) {
 
     private fun setupRecyclerView() {
         bookAdapter = BookAdapter { book ->
-            // Navegar al detalle usando Navigation Component pasar el id
+            val bundle = Bundle().apply {
+                putInt(IdBook, book.id)
+            }
+            findNavController().navigate(
+                R.id.action_bookListFragment_to_bookDetailFragment,
+                bundle
+            )
         }
         binding.recyclerView.apply {
             adapter = bookAdapter
@@ -68,6 +76,7 @@ class BookingListFragment : Fragment(R.layout.fragment_booking_list) {
         }
     }
 
+
     private fun showAddBookDialog() {
         val dialogBinding = DialogAddBookBinding.inflate(layoutInflater)
 
@@ -76,7 +85,21 @@ class BookingListFragment : Fragment(R.layout.fragment_booking_list) {
             .setView(dialogBinding.root)
             .setPositiveButton("Add") { _, _ ->
                 with(dialogBinding) {
-                   //TODO call the function that add a new book
+                    val title = dialogBinding.titleInput.text.toString().trim()
+                    val author = dialogBinding.authorInput.text.toString().trim()
+                    val yearString = dialogBinding.yearInput.text.toString().trim()
+                    val description = dialogBinding.descriptionInput.text.toString().trim()
+
+                    if (title.isNotBlank() && author.isNotBlank() && yearString.isNotBlank() && description.isNotBlank()) {
+                        val year = yearString.toIntOrNull()
+                        if(year != null){
+                            viewModel.addBook(title,author,year,description)
+                        }else{
+                            Toast.makeText(requireContext(), "Por favor ingresa un año valido", Toast.LENGTH_LONG).show()
+                        }
+                    }else{
+                        Toast.makeText(requireContext(), "Por favor ingresa todos los validos.", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             .setNegativeButton("Cancel", null)
